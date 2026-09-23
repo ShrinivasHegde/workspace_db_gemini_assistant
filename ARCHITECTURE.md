@@ -113,4 +113,4 @@ app/static/app.js renders the answer in the chat panel
 | --- | --- | --- |
 | Target database | `TARGET_DATABASE_URL` | Database being inspected; use a dedicated read-only role. |
 | Application database | `APP_DATABASE_URL` | PostgreSQL database containing the `assistant` chat tables. |
-| Configuration | `.env` | Local secrets and connection settings; never commit it. |
+| Configuration | `.env.local` / `.env.prod` plus ignored `.env.secrets.*` | Runtime settings and local secrets. |

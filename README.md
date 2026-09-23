@@ -42,10 +42,10 @@ python -m pip install -r requirements.txt
 ### 5. Create your local configuration
 
 ```powershell
-Copy-Item .env.example .env.local
+Copy-Item .env.example .env.secrets.local
 ```
 
-Edit `.env.local`. Set a new, private `GEMINI_API_KEY` and two separate database URLs:
+Edit `.env.secrets.local`. Set a new, private `GEMINI_API_KEY` and two separate database URLs. The tracked `.env.local` contains only non-secret local defaults:
 
 ```dotenv
 GEMINI_API_KEY=your_new_private_key
@@ -80,27 +80,27 @@ Open `http://localhost:3002`. Click **Sync schema**, create a chat, and ask a qu
 | `APP_HOST` | Server address | `127.0.0.1` |
 | `APP_PORT` | UI and API port | `3002` |
 
-Never commit `.env.local`, `.env.prod`, real API keys, or passwords to Git. The `*.example` files are safe templates.
+`.env.local` and `.env.prod` are intentionally tracked and contain no credentials. Never commit `.env.secrets.local`, `.env.secrets.prod`, real API keys, or passwords.
 
 ## Environments
 
 Set `APP_ENV` before starting the app. It selects the configuration file and safe runtime defaults.
 
-| Environment | Loaded file | Default host | Debug | Local history file |
-| --- | --- | --- | --- | --- |
-| `local` | `.env.local` | `127.0.0.1` | On | `data/chat_history.local.db` |
-| `dev` | `.env.local` | `127.0.0.1` | On | `data/chat_history.dev.db` |
-| `prod` | `.env.prod` | `0.0.0.0` | Off | `data/chat_history.prod.db` |
+| Environment | Tracked settings file | Default host | Debug |
+| --- | --- | --- | --- |
+| `local` | `.env.local` | `127.0.0.1` | On |
+| `dev` | `.env.local` | `127.0.0.1` | On |
+| `prod` | `.env.prod` | `0.0.0.0` | Off |
 
 For local use, no command is needed because `local` is the default. For production-style testing:
 
 ```powershell
-Copy-Item .env.example .env.prod
+Copy-Item .env.example .env.secrets.prod
 $env:APP_ENV = "prod"
 python main.py
 ```
 
-When using `.env.prod`, change `APP_ENV=prod`, set `APP_HOST=0.0.0.0`, set `APP_DEBUG=false`, and configure production-only credentials and CORS origins.
+When using `.env.prod`, set `APP_ENV=prod` before startup and provide credentials through `.env.secrets.prod` or deployment environment variables.
 
 `CORS_ORIGINS`, `APP_HOST`, `APP_DEBUG`, `LOG_LEVEL`, `APP_DATABASE_URL`, and `TARGET_DATABASE_URL` can be overridden in the selected environment file.
 
@@ -111,17 +111,17 @@ Docker is included for future AWS-ready deployment, but no cloud resources are c
 Local container test:
 
 ```powershell
-Copy-Item .env.example .env.local
-# Edit .env.local with your local database URL and private Gemini key.
+# Set GEMINI_API_KEY, APP_DATABASE_URL, and TARGET_DATABASE_URL in your terminal.
 docker compose up --build
 ```
 
 For a production-style container configuration:
 
 ```powershell
-Copy-Item .env.example .env.prod
+$env:GEMINI_API_KEY = "your_private_key"
+$env:APP_DATABASE_URL = "postgresql://user:password@host:5432/analyse_db"
+$env:TARGET_DATABASE_URL = "postgresql://readonly_user:password@host:5432/target_db"
 $env:APP_ENV = "prod"
-$env:APP_ENV_FILE = ".env.prod"
 docker compose up --build
 ```
 

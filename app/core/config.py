@@ -11,6 +11,9 @@ APP_ENV = os.getenv("APP_ENV", "local").lower()
 if APP_ENV not in ENV_FILES:
     raise RuntimeError("APP_ENV must be one of: local, dev, prod.")
 load_dotenv(PROJECT_DIR / ENV_FILES[APP_ENV], override=False)
+# Secrets stay outside source control. This optional file overrides no existing
+# operating-system variables and is intended for local API keys/passwords.
+load_dotenv(PROJECT_DIR / f".env.secrets.{APP_ENV}", override=False)
 
 DEFAULTS = {
     "local": {"host": "127.0.0.1", "debug": True, "history": "data/chat_history.local.db"},

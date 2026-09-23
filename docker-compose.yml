@@ -9,6 +9,9 @@ services:
       APP_ENV: ${APP_ENV:-local}
       APP_HOST: 0.0.0.0
       APP_PORT: 3002
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?Set GEMINI_API_KEY in your terminal before starting Docker}
+      APP_DATABASE_URL: ${APP_DATABASE_URL:?Set APP_DATABASE_URL in your terminal before starting Docker}
+      TARGET_DATABASE_URL: ${TARGET_DATABASE_URL:?Set TARGET_DATABASE_URL in your terminal before starting Docker}
     volumes:
       - chat_history:/app/data
 
